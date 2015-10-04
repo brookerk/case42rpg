@@ -46,6 +46,10 @@
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\packages\MySql.Data.6.9.7\lib\net45\MySql.Data.dll</HintPath>
     </Reference>
+    <Reference Include="Newtonsoft.Json, Version=7.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\packages\Newtonsoft.Json.7.0.1\lib\net45\Newtonsoft.Json.dll</HintPath>
+    </Reference>
     <Reference Include="NHibernate">
       <HintPath>..\packages\NHibernate.4.0.4.4000\lib\net40\NHibernate.dll</HintPath>
     </Reference>
@@ -53,7 +57,7 @@
       <HintPath>..\..\..\Visual Studio 2013\Projects\RuneSlinger\lib\photon-server\Photon.SocketServer.dll</HintPath>
     </Reference>
     <Reference Include="PhotonHostRuntimeInterfaces">
-      <HintPath>..\..\..\Visual Studio 2013\Projects\RuneSlinger\lib\photon-server\PhotonHostRuntimeInterfaces.dll</HintPath>
+      <HintPath>..\..\..\Documents\Visual Studio 2013\Projects\RuneSlinger\lib\photon-server\PhotonHostRuntimeInterfaces.dll</HintPath>
       <EmbedInteropTypes>True</EmbedInteropTypes>
     </Reference>
     <Reference Include="System" />
@@ -65,7 +69,11 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Abstract\ICommandHandler.cs" />
     <Compile Include="Application.cs" />
+    <Compile Include="CommandContext.cs" />
+    <Compile Include="CommandHandlers\LoginHandler.cs" />
+    <Compile Include="CommandHandlers\RegisterHandler.cs" />
     <Compile Include="Entities\User.cs" />
     <Compile Include="Peer.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />

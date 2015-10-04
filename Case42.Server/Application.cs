@@ -6,10 +6,12 @@ using System.Collections.Generic;
 using NHibernate;
 using NHibernate.Cfg;
 using NHibernate.Mapping.ByCode;
+using Case42.Server.Entities;
 
 using log4net;
 using log4net.Config;
 using System;
+using Case42.Server.ValueObjects;
 using Log4NetLoggerFactory = ExitGames.Logging.Log4Net.Log4NetLoggerFactory;
 
 namespace Case42.Server
@@ -18,14 +20,14 @@ namespace Case42.Server
     {
 
         private static readonly ILog log = LogManager.GetLogger(typeof(Application));
-        private readonly List<Peer> _peers;
+        private readonly List<Case42Peer> _peers;
         private ISessionFactory _sessionFactory;
 
-        public IEnumerable<Peer> Peers { get { return _peers; } }
+        public IEnumerable<Case42Peer> Peers { get { return _peers; } }
 
         public Application()
         {
-            _peers = new List<Peer>();
+            _peers = new List<Case42Peer>();
         }
 
         public ISession OpenSession()
@@ -33,7 +35,7 @@ namespace Case42.Server
             return _sessionFactory.OpenSession();
         }
 
-        public void DestroyPeer(Peer peer)
+        public void DestroyPeer(Case42Peer peer)
         {
             _peers.Remove(peer);
         }
@@ -43,7 +45,7 @@ namespace Case42.Server
             //log.InfoFormat("Peer created at {0}:{1}", initRequest.RemoteIP, initRequest.RemotePort);
             //return new Peer(initRequest);
 
-            var peer = new Peer(this, initRequest);
+            var peer = new Case42Peer(this, initRequest);
             _peers.Add(peer);
             return peer;
         }
@@ -75,7 +77,7 @@ namespace Case42.Server
             //    }
             //}
             //
-            log.Info("------ Application started for Case42 ------");
+            log.Info("------ Application started for RuneSlinger ------");
         }
 
         private void SetupHibernate()
@@ -102,4 +104,3 @@ namespace Case42.Server
 
     }
 }
-

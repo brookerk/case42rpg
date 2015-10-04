@@ -13,18 +13,26 @@ using Case42.Base;
 using NHibernate.Linq;
 using Case42.Server.Entities;
 using Case42.Server.ValueObjects;
+using Newtonsoft.Json;
+using System.IO;
+using Newtonsoft.Json.Bson;
+using Case42.Base.Abstract;
+using Case42.Server.CommandHandlers;
+using Case42.Base.Commands;
 
 namespace Case42.Server
 {
-    public class Peer : PeerBase
+    public class Case42Peer : PeerBase
     {
-        private static readonly ILog log = LogManager.GetLogger(typeof(Peer));
+        private static readonly ILog log = LogManager.GetLogger(typeof(Case42Peer));
         private readonly Application _application;
+        private readonly JsonSerializer _jsonSerializer;
 
-        public Peer(Application application, InitRequest initRequest)
+        public Case42Peer(Application application, InitRequest initRequest)
             : base(initRequest.Protocol, initRequest.PhotonPeer)
         {
             _application = application;
+            _jsonSerializer = new JsonSerializer();
             log.InfoFormat("Peer created at {0}:{1}", initRequest.RemoteIP, initRequest.RemotePort);
 
             //SendEvent(new EventData(
@@ -61,36 +69,59 @@ namespace Case42.Server
             //user registration
             // user authentication
             // sending a message
+            if (operationRequest.OperationCode != (byte)Case42OpCode.DispatchCommand)
+            {
+                SendOperationResponse(new OperationResponse((byte)Case42OpCodeResponse.Invalid), sendParameters);
+                log.WarnFormat("Peer sent unknown operation code: {0}", operationRequest.OperationCode);
+                return;
+            }
+
             using (var session = _application.OpenSession())
             {
                 using (var trans = session.BeginTransaction())
                 {
                     try
                     {
-                        var opCode = (Case42OpCode)operationRequest.OperationCode;
-                        if (opCode == Case42OpCode.Register)
+                        //implementing command factory design
+                        var commandContext = new CommandContext();
+
+                        var commandType = (string)operationRequest.Parameters[(byte)Case42OpCodeParameter.CommandType];
+                        var commandBytes = (byte[])operationRequest.Parameters[(byte)Case42OpCodeParameter.CommandBytes];
+
+                        ICommand command;
+                        using (var ms = new MemoryStream(commandBytes))
                         {
-                            var username = (string)operationRequest.Parameters[(byte)Case42OpCodeParameter.Username];
-                            var password = (string)operationRequest.Parameters[(byte)Case42OpCodeParameter.Password];
-                            var email = (string)operationRequest.Parameters[(byte)Case42OpCodeParameter.Email];
-                            Register(session, username, password, email);
+                            command = (ICommand)_jsonSerializer.Deserialize(new BsonReader(ms), Type.GetType(commandType));
                         }
-                        else if (opCode == Case42OpCode.Login)
+
+                        var loginCommand = command as LoginCommand;
+                        var registerCommand = command as RegisterCommand;
+
+                        if (loginCommand != null)
                         {
-                            var password = (string)operationRequest.Parameters[(byte)Case42OpCodeParameter.Password];
-                            var email = (string)operationRequest.Parameters[(byte)Case42OpCodeParameter.Email];
-                            Login(session, password, email);
+                            (new LoginHandler(session)).Handle(commandContext, loginCommand);
                         }
-                        else if (opCode == Case42OpCode.SendMessage)
+                        else if (registerCommand != null)
                         {
-                            var message = (string)operationRequest.Parameters[(byte)Case42OpCodeParameter.Message];
-                            SendMessage(session, message);
+                            (new RegisterHandler(session)).Handle(commandContext, registerCommand);
                         }
                         else
                         {
                             SendOperationResponse(new OperationResponse((byte)Case42OpCodeResponse.Invalid), sendParameters);
+                            log.WarnFormat("Peer sent unknown command: {0}", commandType);
+                            trans.Rollback();
+                            return;
                         }
 
+                        var parameters = new Dictionary<byte, object>();
+                        if (commandContext.Response != null)
+                        {
+                            parameters[(byte)Case42OpCodeResponseParameter.CommandResponse] = SerializeBSON(commandContext.Response);
+                        }
+
+                        parameters[(byte)Case42OpCodeResponseParameter.OperationErrors] = SerializeBSON(commandContext.OperationErrors);
+                        parameters[(byte)Case42OpCodeResponseParameter.PropertyErrors] = SerializeBSON(commandContext.PropertyErrors);
+                        SendOperationResponse(new OperationResponse((byte)Case42OpCodeResponse.CommandDispatched, parameters), sendParameters);
                         trans.Commit();
                     }
                     catch (Exception ex)
@@ -106,62 +137,20 @@ namespace Case42.Server
 
         }
 
+        private byte[] SerializeBSON(object obj)
+        {
+            using (var ms = new MemoryStream())
+            {
+
+                _jsonSerializer.Serialize(new BsonWriter(ms), obj);
+                return ms.ToArray();
+            }
+        }
         private void SendMessage(NHibernate.ISession session, string message)
         {
 
         }
 
-        private void Login(NHibernate.ISession session, string password, string email)
-        {
-            var user = session.Query<User>().SingleOrDefault(s => s.Email == email);
-            if (user == null || !user.Password.EqualsPlainText(password))
-            {
-                SendError("Email or password is incorrect");
-                return;
-            }
-
-            SendSuccess();
-
-        }
-
-        private void Register(NHibernate.ISession session, string username, string password, string email)
-        {
-            if (string.IsNullOrWhiteSpace(username) || string.IsNullOrWhiteSpace(password) || string.IsNullOrWhiteSpace(email))
-            {
-                SendError("All fields are required");
-                return;
-            }
-
-            if (username.Length > 128)
-            {
-                SendError("Username must be less than 128 characters long");
-                return;
-            }
-
-            if (email.Length > 200)
-            {
-                SendError("Email must be less than 200 characters long");
-                return;
-            }
-
-            //Isession.query need to add "using nhibernate.linq"
-            if (session.Query<User>().Any(t => t.Username == username || t.Email == email))
-            {
-                SendError("Username and email must be unique");
-                return;
-            }
-
-            var user = new User
-            {
-                Username = username,
-                Email = email,
-                CreatedAt = DateTime.UtcNow,
-                Password = HashedPassword.fromPlainText(password)
-            };
-
-            session.Save(user);
-            SendSuccess();
-        }
 
         protected override void OnDisconnect(DisconnectReason reasonCode, string reasonDetail)
         {
@@ -170,26 +159,26 @@ namespace Case42.Server
             _application.DestroyPeer(this);
         }
 
-        private void SendSuccess()
-        {
-            SendOperationResponse(new OperationResponse((byte)Case42OpCodeResponse.Success), new SendParameters { Unreliable = false });
-        }
+        //private void SendSuccess()
+        //{
+        //    SendOperationResponse(new OperationResponse((byte)Case42OpCodeResponse.Success), new SendParameters { Unreliable = false });
+        //}
 
-        private void SendError(string message)
-        {
-            SendOperationResponse(
-                new OperationResponse(
-                    (byte)Case42OpCodeResponse.Error,
-                    new Dictionary<byte, object>
-                    {
-                        {(byte)Case42OpCodeResponseParameter.ErrorMessage, message}
-                    }
-                    )
-               , new SendParameters
-               {
-                   Unreliable = false
-               });
-        }
+        //private void SendError(string message)
+        //{
+        //    SendOperationResponse(
+        //        new OperationResponse(
+        //            (byte)Case42OpCodeResponse.Error, 
+        //            new Dictionary<byte,object>
+        //            {
+        //                {(byte)Case42OpCodeResponseParameter.ErrorMessage, message}
+        //            }
+        //            )
+        //       , new SendParameters
+        //        {
+        //            Unreliable = false
+        //        });
+        //}
 
     }
 }

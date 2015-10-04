@@ -7,9 +7,7 @@ namespace Case42.Base
 {
     public enum Case42OpCodeParameter : byte
     {
-        Username,
-        Password,
-        Email,
-        Message
+        CommandType,
+        CommandBytes
     }
 }

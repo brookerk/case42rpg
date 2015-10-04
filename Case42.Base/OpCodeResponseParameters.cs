@@ -7,6 +7,8 @@ namespace Case42.Base
 {
     public enum Case42OpCodeResponseParameter : byte
     {
-        ErrorMessage
+        CommandResponse,
+        OperationErrors,
+        PropertyErrors
     }
 }

@@ -36,3 +36,5 @@ C:\Users\Kevin Brooker\Desktop\case42rpg\Case42.Server\bin\Debug\Photon.SocketSe
 C:\Users\Kevin Brooker\Desktop\case42rpg\Case42.Server\obj\Debug\Case42.Server.csprojResolveAssemblyReference.cache
 C:\Users\Kevin Brooker\Desktop\case42rpg\Case42.Server\obj\Debug\Case42.Server.dll
 C:\Users\Kevin Brooker\Desktop\case42rpg\Case42.Server\obj\Debug\Case42.Server.pdb
+C:\Users\Kevin Brooker\Desktop\case42rpg\Case42.Server\bin\Debug\Newtonsoft.Json.dll
+C:\Users\Kevin Brooker\Desktop\case42rpg\Case42.Server\bin\Debug\Newtonsoft.Json.xml
