@@ -27,12 +27,8 @@ C:\Users\Kevin Brooker\Desktop\case42rpg\Case42.Server\bin\Debug\Iesi.Collection
 C:\Users\Kevin Brooker\Desktop\case42rpg\Case42.Server\bin\Debug\MySql.Data.dll
 C:\Users\Kevin Brooker\Desktop\case42rpg\Case42.Server\bin\Debug\NHibernate.dll
 C:\Users\Kevin Brooker\Desktop\case42rpg\Case42.Server\bin\Debug\Case42.Base.pdb
-C:\Users\Kevin Brooker\Desktop\case42rpg\Case42.Server\bin\Debug\ExitGames.Logging.Log4Net.pdb
-C:\Users\Kevin Brooker\Desktop\case42rpg\Case42.Server\bin\Debug\ExitGamesLibs.pdb
-C:\Users\Kevin Brooker\Desktop\case42rpg\Case42.Server\bin\Debug\ExitGamesLibs.xml
 C:\Users\Kevin Brooker\Desktop\case42rpg\Case42.Server\bin\Debug\Iesi.Collections.xml
 C:\Users\Kevin Brooker\Desktop\case42rpg\Case42.Server\bin\Debug\NHibernate.xml
-C:\Users\Kevin Brooker\Desktop\case42rpg\Case42.Server\bin\Debug\Photon.SocketServer.pdb
 C:\Users\Kevin Brooker\Desktop\case42rpg\Case42.Server\obj\Debug\Case42.Server.csprojResolveAssemblyReference.cache
 C:\Users\Kevin Brooker\Desktop\case42rpg\Case42.Server\obj\Debug\Case42.Server.dll
 C:\Users\Kevin Brooker\Desktop\case42rpg\Case42.Server\obj\Debug\Case42.Server.pdb
