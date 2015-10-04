@@ -94,7 +94,7 @@ namespace Case42.Server
             //    }
             //}
             //
-            log.Info("------ Application started for RuneSlinger ------");
+            log.Info("------ Application started ------");
         }
 
         private void SetupHibernate()
