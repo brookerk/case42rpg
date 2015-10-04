@@ -6,6 +6,7 @@ using NHibernate.Linq;
 using System.Linq;
 using Case42.Server.Entities;
 using System;
+using Case42.Server.Components;
 using Case42.Server.ValueObjects;
 
 namespace Case42.Server.CommandHandlers
@@ -13,13 +14,15 @@ namespace Case42.Server.CommandHandlers
     public class RegisterHandler : ICommandHandler<RegisterCommand>
     {
         private readonly ISession _database;
+        private readonly IApplication _application;
 
-        public RegisterHandler(ISession database)
+        public RegisterHandler(ISession database, IApplication application)
         {
             _database = database;
+            _application = application;
         }
 
-        public void Handle(CommandContext context, RegisterCommand command)
+        public void Handle(INetworkedSession session, CommandContext context, RegisterCommand command)
         {
             if (string.IsNullOrWhiteSpace(command.Username) || string.IsNullOrWhiteSpace(command.Password) || string.IsNullOrWhiteSpace(command.Email))
             {
@@ -54,9 +57,22 @@ namespace Case42.Server.CommandHandlers
             };
 
             _database.Save(user);
+            session.Registry.Set(new AuthComponent(user.Id, user.Username, user.Email));
+
+            //try to join a session
+            try
+            {
+                //lobby.Join will throw operationException if fail
+                _application.Registry.Get<LobbyComponent>(lobby => lobby.Join(session));
+            }
+            catch (OperationException ex)
+            {
+                context.RaiseOperationError(ex.Message);
+                return;
+            }
+
             context.SetResponse(new RegisterResponse(user.Id));
 
         }
     }
 }
-

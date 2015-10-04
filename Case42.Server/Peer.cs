@@ -19,20 +19,25 @@ using Newtonsoft.Json.Bson;
 using Case42.Base.Abstract;
 using Case42.Server.CommandHandlers;
 using Case42.Base.Commands;
+using Case42.Server.Abstract;
 
 namespace Case42.Server
 {
-    public class Case42Peer : PeerBase
+    public class Case42Peer : PeerBase, INetworkedSession
     {
         private static readonly ILog log = LogManager.GetLogger(typeof(Case42Peer));
         private readonly Application _application;
         private readonly JsonSerializer _jsonSerializer;
+
+        public Registry Registry { get; private set; }
 
         public Case42Peer(Application application, InitRequest initRequest)
             : base(initRequest.Protocol, initRequest.PhotonPeer)
         {
             _application = application;
             _jsonSerializer = new JsonSerializer();
+            Registry = new Registry();
+
             log.InfoFormat("Peer created at {0}:{1}", initRequest.RemoteIP, initRequest.RemotePort);
 
             //SendEvent(new EventData(
@@ -45,6 +50,19 @@ namespace Case42.Server
             //    { 
             //        Unreliable = false 
             //    });
+        }
+
+        public void Publish(IEvent @event)
+        {
+            SendEvent(
+                new EventData(
+                    (byte)Case42EventCode.SendEvent,
+                    new Dictionary<byte, object>
+                    {
+                        {(byte) Case42EventCodeParameter.EventType, @event.GetType().AssemblyQualifiedName},
+                        {(byte) Case42EventCodeParameter.EventBytes,SerializeBSON(@event)}
+                    })
+                    , new SendParameters { Unreliable = false });
         }
 
         protected override void OnOperationRequest(OperationRequest operationRequest, SendParameters sendParameters)
@@ -96,14 +114,19 @@ namespace Case42.Server
 
                         var loginCommand = command as LoginCommand;
                         var registerCommand = command as RegisterCommand;
+                        var sendlobbyMessageCommand = command as SendLobbyMessageCommand;
 
                         if (loginCommand != null)
                         {
-                            (new LoginHandler(session)).Handle(commandContext, loginCommand);
+                            (new LoginHandler(session, _application)).Handle(this, commandContext, loginCommand);
                         }
                         else if (registerCommand != null)
                         {
-                            (new RegisterHandler(session)).Handle(commandContext, registerCommand);
+                            (new RegisterHandler(session, _application)).Handle(this, commandContext, registerCommand);
+                        }
+                        else if (sendlobbyMessageCommand != null)
+                        {
+                            (new SendLobbyMessageHandler(_application)).Handle(this, commandContext, sendlobbyMessageCommand);
                         }
                         else
                         {

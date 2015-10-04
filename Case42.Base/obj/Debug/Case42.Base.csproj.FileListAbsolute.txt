@@ -7,3 +7,6 @@ C:\Users\Kevin Brooker\Desktop\case42rpg\Case42.Base\bin\Debug\Case42.Base.dll
 C:\Users\Kevin Brooker\Desktop\case42rpg\Case42.Base\bin\Debug\Case42.Base.pdb
 C:\Users\Kevin Brooker\Desktop\case42rpg\Case42.Base\obj\Debug\Case42.Base.dll
 C:\Users\Kevin Brooker\Desktop\case42rpg\Case42.Base\obj\Debug\Case42.Base.pdb
+C:\Users\Kevin Brooker\Desktop\case42rpg\Case42.Base\obj\Debug\Case42.Base.csprojResolveAssemblyReference.cache
+C:\Users\Kevin Brooker\Desktop\case42rpg\Case42.Base\bin\Debug\Newtonsoft.Json.dll
+C:\Users\Kevin Brooker\Desktop\case42rpg\Case42.Base\bin\Debug\Newtonsoft.Json.xml

@@ -7,8 +7,10 @@ using Case42.Base.Abstract;
 
 namespace Case42.Server.Abstract
 {
-    public interface ICommandHandler<TCommand> where TCommand : ICommand
+    public interface INetworkedSession
     {
-        void Handle(INetworkedSession session, CommandContext context, TCommand command);
+        Registry Registry { get; }
+
+        void Publish(IEvent @event);
     }
 }
