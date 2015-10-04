@@ -9,6 +9,6 @@ namespace Case42.Server.Abstract
 {
     public interface ICommandHandler<TCommand> where TCommand : ICommand
     {
-        void Handle(CommandContext context, TCommand command);
+        void Handle(INetworkedSession session, CommandContext context, TCommand command);
     }
 }
