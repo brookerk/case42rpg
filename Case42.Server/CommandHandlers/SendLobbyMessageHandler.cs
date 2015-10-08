@@ -24,4 +24,3 @@ namespace Case42.Server.CommandHandlers
         }
     }
 }
-

@@ -116,6 +116,8 @@ namespace Case42.Server
                         var loginCommand = command as LoginCommand;
                         var registerCommand = command as RegisterCommand;
                         var sendlobbyMessageCommand = command as SendLobbyMessageCommand;
+                        var challengeCommand = command as ChallengePlayerCommand;
+                        var respondToChallengeCommand = command as RespondToChallengeCommand;
 
                         if (loginCommand != null)
                         {
@@ -128,6 +130,14 @@ namespace Case42.Server
                         else if (sendlobbyMessageCommand != null)
                         {
                             (new SendLobbyMessageHandler(_application)).Handle(this, commandContext, sendlobbyMessageCommand);
+                        }
+                        else if (challengeCommand != null)
+                        {
+                            (new ChallengePlayerHandler(session, _application)).Handle(this, commandContext, challengeCommand);
+                        }
+                        else if (respondToChallengeCommand != null)
+                        {
+                            (new RespondToChallengeHandler(session, _application)).Handle(this, commandContext, respondToChallengeCommand);
                         }
                         else
                         {

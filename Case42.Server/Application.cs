@@ -34,7 +34,7 @@ namespace Case42.Server
             _peers = new List<Case42Peer>();
             Registry = new Registry();
 
-            Registry.Set(new LobbyComponent());
+            Registry.Set(new LobbyComponent(this));
         }
 
         public ISession OpenSession()

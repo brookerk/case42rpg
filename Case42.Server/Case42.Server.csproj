@@ -74,10 +74,14 @@
     <Compile Include="Abstract\INetworkedSession.cs" />
     <Compile Include="Application.cs" />
     <Compile Include="CommandContext.cs" />
+    <Compile Include="CommandHandlers\ChallengePlayerHandler.cs" />
     <Compile Include="CommandHandlers\LoginHandler.cs" />
     <Compile Include="CommandHandlers\RegisterHandler.cs" />
+    <Compile Include="CommandHandlers\RespondToChallengeHandler.cs" />
     <Compile Include="CommandHandlers\SendLobbyMessageHandler.cs" />
     <Compile Include="Components\AuthComponent.cs" />
+    <Compile Include="Components\Case42Game.cs" />
+    <Compile Include="Components\ChallengeComponent.cs" />
     <Compile Include="Components\HashSet.cs" />
     <Compile Include="Components\LobbyComponent.cs" />
     <Compile Include="Entities\User.cs" />
@@ -85,6 +89,7 @@
     <Compile Include="Peer.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Registry.cs" />
+    <Compile Include="ValueObjects\ChallengeDirection.cs" />
     <Compile Include="ValueObjects\HashedPassword.cs" />
   </ItemGroup>
   <ItemGroup>
