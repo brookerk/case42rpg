@@ -105,6 +105,7 @@ namespace Case42.Server
 
                         var commandType = (string)operationRequest.Parameters[(byte)Case42OpCodeParameter.CommandType];
                         var commandBytes = (byte[])operationRequest.Parameters[(byte)Case42OpCodeParameter.CommandBytes];
+                        var commandId = operationRequest.Parameters[(byte)Case42OpCodeParameter.CommandId];
 
                         ICommand command;
                         using (var ms = new MemoryStream(commandBytes))
@@ -144,6 +145,8 @@ namespace Case42.Server
 
                         parameters[(byte)Case42OpCodeResponseParameter.OperationErrors] = SerializeBSON(commandContext.OperationErrors);
                         parameters[(byte)Case42OpCodeResponseParameter.PropertyErrors] = SerializeBSON(commandContext.PropertyErrors);
+                        parameters[(byte)Case42OpCodeResponseParameter.CommandId] = commandId;
+
                         SendOperationResponse(new OperationResponse((byte)Case42OpCodeResponse.CommandDispatched, parameters), sendParameters);
                         trans.Commit();
                     }

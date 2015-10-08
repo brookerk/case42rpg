@@ -25,10 +25,10 @@ namespace Case42.Server
         private readonly List<Case42Peer> _peers;
         private ISessionFactory _sessionFactory;
 
-        
-        public Registry Registry {get; private set;}
+
+        public Registry Registry { get; private set; }
         public IEnumerable<INetworkedSession> Sessions { get { return _peers; } }
-        
+
         public Application()
         {
             _peers = new List<Case42Peer>();
@@ -46,15 +46,15 @@ namespace Case42.Server
         {
             //remove it from lobby
             Registry.Get<LobbyComponent>(lobby =>
-                {
-                    if (lobby.Contains(peer))
-                        lobby.Leave(peer);
-                });
+            {
+                if (lobby.Contains(peer))
+                    lobby.Leave(peer);
+            });
 
             //remove it from the network session but not lobby
             _peers.Remove(peer);
 
-            
+
         }
 
         protected override PeerBase CreatePeer(InitRequest initRequest)
@@ -62,7 +62,7 @@ namespace Case42.Server
             //log.InfoFormat("Peer created at {0}:{1}", initRequest.RemoteIP, initRequest.RemotePort);
             //return new Case42Peer(initRequest);
 
-            var peer = new Case42Peer(this,initRequest);
+            var peer = new Case42Peer(this, initRequest);
             _peers.Add(peer);
             return peer;
         }
@@ -77,7 +77,7 @@ namespace Case42.Server
             ////test code to test db transaction
             //using (var session = _sessionFactory.OpenSession())
             //{
-            
+
             //    log.InfoFormat("Session created at {0}:{1}", session.Connection.State.ToString(),session.IsConnected);
             //    using (var trans = session.BeginTransaction())
             //    {
@@ -88,18 +88,18 @@ namespace Case42.Server
             //            CreatedAt = DateTime.UtcNow,
             //            Password = new HashedPassword("hash1","salt1")
             //        };
-                    
+
             //        session.Save(user);
             //        trans.Commit();
             //    }
             //}
             //
-            log.Info("------ Application started ------");
+            log.Info("------ Application started for RuneSlinger ------");
         }
 
         private void SetupHibernate()
         {
-            
+
             //tell nhibernate where to get database configuration from
             var config = new Configuration();
             config.Configure();

@@ -9,6 +9,7 @@ namespace Case42.Base
     {
         CommandResponse,
         OperationErrors,
-        PropertyErrors
+        PropertyErrors,
+        CommandId
     }
 }

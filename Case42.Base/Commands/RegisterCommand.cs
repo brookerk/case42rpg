@@ -30,4 +30,3 @@ namespace Case42.Base.Commands
         }
     }
 }
-

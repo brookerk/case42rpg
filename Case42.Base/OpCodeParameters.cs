@@ -8,6 +8,7 @@ namespace Case42.Base
     public enum Case42OpCodeParameter : byte
     {
         CommandType,
-        CommandBytes
+        CommandBytes,
+        CommandId
     }
 }
